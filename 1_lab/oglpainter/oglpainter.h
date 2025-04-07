@@ -26,6 +26,7 @@ protected:
 private:
     FiguresHandler *figuresHandler;
     void paintFigure(Figure *currentFigureToPaint);
+    void paintCircle(float centerX, float centerY, float radius);
     void paintBorder(Figure *figureToPaint, QList<Point*> *figuresBorderPoints);
 };
 

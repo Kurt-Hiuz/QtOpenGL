@@ -36,6 +36,12 @@ public:
 
     void setIsCicle(bool isItCircle);
     bool getIsCircle();
+
+    void setCenter(Point *newCircleCenter);
+    Point* getCenter();
+
+    void setRadius(float newRadius);
+    float getRadius();
     // void paint();
     // void paint2f();
     // void paint3f();
@@ -50,7 +56,9 @@ private:
     QColor *backgroundColor;
     int dimensional;
     GLenum paintMode;
-    bool isCircle;
+    bool isCircle = false;
+    Point *centerCircle;
+    int radius;
 };
 
 #endif // FIGURE_H

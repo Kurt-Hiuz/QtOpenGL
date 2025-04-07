@@ -96,6 +96,26 @@ bool Figure::getIsCircle()
     return this->isCircle;
 }
 
+void Figure::setCenter(Point *newCircleCenter)
+{
+    this->centerCircle = newCircleCenter;
+}
+
+Point *Figure::getCenter()
+{
+    return this->centerCircle;
+}
+
+void Figure::setRadius(float newRadius)
+{
+    this->radius = newRadius;
+}
+
+float Figure::getRadius()
+{
+    return this->radius;
+}
+
 void Figure::addNewPoint(Point *newPoint)
 {
     points->append(newPoint);

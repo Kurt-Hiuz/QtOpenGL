@@ -36,32 +36,36 @@ void AddNewFigureDialogWindow::createInterface()
     hint_Y = new QLabel("Коорд. у: ");
     hint_Z = new QLabel("Коорд. z: ");
     hint_W = new QLabel("Коорд. w: ");
-    hint_border = new QLabel("Рамка, px");
+    hint_border = new QLabel("Рамка");
+    hint_radius = new QLabel("Радиус");
 
     pointSpinBox_X = new QDoubleSpinBox();
     pointSpinBox_X->setSingleStep(0.01);
-    pointSpinBox_X->setRange(-3.0, 3.0);
+    // pointSpinBox_X->setRange(-3.0, 3.0);
     pointSpinBox_X->setSuffix(" f");
 
     pointSpinBox_Y = new QDoubleSpinBox();
     pointSpinBox_Y->setSingleStep(0.01);
-    pointSpinBox_Y->setRange(-3.0, 3.0);
+    // pointSpinBox_Y->setRange(-3.0, 3.0);
     pointSpinBox_Y->setSuffix(" f");
 
     pointSpinBox_Z = new QDoubleSpinBox();
     pointSpinBox_Z->setSingleStep(0.01);
-    pointSpinBox_Z->setRange(-3.0, 3.0);
+    // pointSpinBox_Z->setRange(-3.0, 3.0);
     pointSpinBox_Z->setSuffix(" f");
     pointSpinBox_Z->setDisabled(true);
 
     pointSpinBox_W = new QDoubleSpinBox();
     pointSpinBox_W->setSingleStep(0.01);
-    pointSpinBox_W->setRange(-3.0, 3.0);
+    // pointSpinBox_W->setRange(-3.0, 3.0);
     pointSpinBox_W->setSuffix(" f");
     pointSpinBox_W->setDisabled(true);
 
     borderWidthSpinBox = new QSpinBox();
     borderWidthSpinBox->setSuffix(" px");
+
+    radiusSpinBox = new QDoubleSpinBox();
+    radiusSpinBox->setSuffix(" f");
 
     dimensionComboBox = new QComboBox();
     dimensionComboBox->setPlaceholderText("Выбор размерности фигуры");
@@ -122,11 +126,20 @@ void AddNewFigureDialogWindow::createInterface()
     managePointHLayout->addWidget(deletePointBtn);
     managePointHLayout->addWidget(oglModeComboBox);
 
+    QVBoxLayout* borderCircleHintsVLayout = new QVBoxLayout();
+    borderCircleHintsVLayout->addWidget(hint_border);
+    borderCircleHintsVLayout->addWidget(hint_radius);
+
+    QVBoxLayout* borderCircleSpinBoxVLayout = new QVBoxLayout();
+    borderCircleSpinBoxVLayout->addWidget(borderWidthSpinBox);
+    borderCircleSpinBoxVLayout->addWidget(radiusSpinBox);
+
     QHBoxLayout* colorHLayout = new QHBoxLayout();
     colorHLayout->addWidget(chooseBackgroundColorBtn);
     colorHLayout->addWidget(chooseBorderColorBtn);
-    colorHLayout->addWidget(hint_border);
-    colorHLayout->addWidget(borderWidthSpinBox);
+    colorHLayout->addLayout(borderCircleHintsVLayout);
+    colorHLayout->addLayout(borderCircleSpinBoxVLayout);
+    // добавление слоя с подсказками и инпутами рамки и радиуса
     colorHLayout->addWidget(saveFigureBtn);
     colorHLayout->addWidget(clearInputsBtn);
 
@@ -138,7 +151,7 @@ void AddNewFigureDialogWindow::createInterface()
     this->setWindowTitle("Добавление фигуры");
 
     connect(dimensionComboBox, &QComboBox::currentIndexChanged, this, &AddNewFigureDialogWindow::activateInterface);
-    connect(oglModeComboBox, &QComboBox::currentIndexChanged, this, &AddNewFigureDialogWindow::activateSaveBtn);
+    connect(oglModeComboBox, &QComboBox::currentIndexChanged, this, &AddNewFigureDialogWindow::activateSaveBtnAndCheckCircle);
 
     connect(chooseBackgroundColorBtn, &QPushButton::clicked, this, &AddNewFigureDialogWindow::showBackgroundColorInput);
     connect(chooseBorderColorBtn, &QPushButton::clicked, this, &AddNewFigureDialogWindow::showBorderColorInput);
@@ -160,6 +173,7 @@ void AddNewFigureDialogWindow::setInterfaceDisabled(bool flag)
     pointSpinBox_Z->setDisabled(flag);
     pointSpinBox_W->setDisabled(flag);
     borderWidthSpinBox->setDisabled(flag);
+    radiusSpinBox->setDisabled(flag);
     currentPointsComboBox->setDisabled(flag);
     oglModeComboBox->setDisabled(flag);
     clearInputsBtn->setDisabled(flag);
@@ -214,6 +228,7 @@ void AddNewFigureDialogWindow::activateInterface()
 {
     setInterfaceDisabled(false);
     saveFigureBtn->setDisabled(true);               //  пока не выберется формат рисования, кнопка должна быть отключена
+    radiusSpinBox->setDisabled(true);               //  пока не выберется формат рисования Окружность, кнопка должна быть отключена
     currentPointsComboBox->clear();
     if(dimensionComboBox->currentData() == 2){
         pointSpinBox_Z->setDisabled(true);
@@ -232,9 +247,10 @@ void AddNewFigureDialogWindow::activateInterface()
     }
 }
 
-void AddNewFigureDialogWindow::activateSaveBtn()
+void AddNewFigureDialogWindow::activateSaveBtnAndCheckCircle()
 {
     saveFigureBtn->setDisabled(false);
+    radiusSpinBox->setDisabled(oglModeComboBox->currentText() != "Окружность");
 }
 
 void AddNewFigureDialogWindow::saveNewFigure()
@@ -247,16 +263,22 @@ void AddNewFigureDialogWindow::saveNewFigure()
     newFigure->setDimensional(dimensionComboBox->currentData().toInt());
     newFigure->setBackgroundColor(new QColor(chooseBackgroundColorBtn->palette().button().color()));
 
-    // if(oglModeComboBox->currentText() == "Окружность"){
-    //     //
-    //     newFigure->setIsCicle(true);
-    //     emit newFigureCreated(newFigure);
-    //     return;
-    // }
+    QList<QVariant> ComboBoxListOfPoints{};
+    if(oglModeComboBox->currentText() == "Окружность"){
+        newFigure->setIsCicle(true);
+        ComboBoxListOfPoints = currentPointsComboBox->itemData(0).toList();
+        // newFigure->setCenter(new Point(ComboBoxListOfPoints.value(0).toFloat(), ComboBoxListOfPoints.value(1).toFloat()));
+        newFigure->addNewPoint(new Point(ComboBoxListOfPoints.value(0).toFloat(), ComboBoxListOfPoints.value(1).toFloat()));
+        newFigure->setRadius(radiusSpinBox->value());
+        qDebug() << "Центр в точке: " << ComboBoxListOfPoints.value(0).toFloat() << ", " << ComboBoxListOfPoints.value(1).toFloat();
+        emit newFigureCreated(newFigure);
+        return;
+    }
+
 
     for(int index = 0; index < currentPointsComboBox->count(); index++){
         Point *newPoint = new Point();
-        QList<QVariant> ComboBoxListOfPoints = currentPointsComboBox->itemData(index).toList();
+        ComboBoxListOfPoints = currentPointsComboBox->itemData(index).toList();
         qDebug() << "Количество координат: " << ComboBoxListOfPoints.length();
         if(ComboBoxListOfPoints.length() == 2){
             newPoint->set_x(ComboBoxListOfPoints.value(0).toFloat());

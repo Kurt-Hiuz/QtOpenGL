@@ -57,6 +57,11 @@ void MainWindow::paintNewFigure(Figure *newFigure)
         return;
     }
 
+    if(newFigure->getIsCircle()){
+        openGL_painter->repaint(newFigure);
+        return;
+    }
+
     qDebug() << "Фигура не содержит точек!";
     // delete newFigure;
 }
