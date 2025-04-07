@@ -34,6 +34,7 @@ private:
     QPushButton* addPointBtn;
     QPushButton* deletePointBtn;
     QPushButton* saveFigureBtn;
+    QPushButton* clearInputsBtn;
     QLabel* hint_X;
     QLabel* hint_Y;
     QLabel* hint_Z;
@@ -49,6 +50,8 @@ private:
     QComboBox* oglModeComboBox;
     QVBoxLayout* mainVLayout = nullptr;
 
+    void setInterfaceDisabled(bool flag);
+
 private slots:
     void showBackgroundColorInput();
     void showBorderColorInput();
@@ -56,8 +59,10 @@ private slots:
     void changeColorBtnBorderColor();
     void addPointBtnIntoCurrentPointsComboBox();
     void deleteSelectedPoint();
-    void activatePointSpinBoxes();
+    void activateInterface();
+    void activateSaveBtn();
     void saveNewFigure();
+    void clearInputs();
 };
 
 #endif // ADDNEWFIGUREDIALOGWINDOW_H

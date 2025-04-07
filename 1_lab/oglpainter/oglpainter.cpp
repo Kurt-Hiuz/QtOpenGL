@@ -20,7 +20,8 @@ void OGLPainter::clearSpace()
 {
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
-    // figuresHandler->deleteFigures();
+    figuresHandler->deleteFigures();
+    update();
     qDebug() << "плоскость очищена";
 }
 
@@ -32,7 +33,7 @@ void OGLPainter::initializeGL()
 
 void OGLPainter::paintGL()
 {
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     if(figuresHandler->countFigures() == 0) {
         qDebug() << "Фигур нет";
@@ -45,31 +46,11 @@ void OGLPainter::paintGL()
 
         qDebug() << "Взята фигура: (" << index << ") " << currentFigure;
 
-        glBegin(currentFigure->getPaintMode());
+        paintFigure(currentFigure);
 
-        if(currentFigure->getDimensional() == 2){
-
-            glColor3f(1.0f, 0.5f, 0.0f);
-
-            QList<Point*> *figurePoints = currentFigure->getPoints();
-
-            for(int jndex = 0; jndex < figurePoints->size(); jndex++){
-                Point* nextPoint = figurePoints->at(jndex);
-
-                if(nextPoint){
-                    glVertex2f(nextPoint->get_x(), nextPoint->get_y());
-                    qDebug() << "Точка:" << nextPoint->get_x() << nextPoint->get_y();
-                }
-            }
-
-            qDebug() << "Фигура " << currentFigure << " отрисована";
-        }
-        glEnd();
     }
-    // figuresHandler->paintFigures();
 
-    // if(this->isTriangle){
-
+    //  тестовая фигура для отработки рисования
         glBegin(4);
         glColor3f(1.0f, 0.0f, 1.0f);
         glVertex3f(0.0f, 0.0f, 0.0f);
@@ -80,31 +61,54 @@ void OGLPainter::paintGL()
         glColor3f(1.0f, 0.0f, 1.0f);
         glVertex3f(-0.5f, -0.5f, 0.0f);
         glEnd();
+}
 
+void OGLPainter::paintFigure(Figure *currentFigureToPaint)
+{
+    glBegin(currentFigureToPaint->getPaintMode());
 
-    //     glBegin(GL_POLYGON);
-    //     glColor3f(1.0f, 0.5f, 0.0f);
-    //     glVertex3f(-0.5f, 0.5f, 0.0f);
+    if(currentFigureToPaint->getDimensional() == 2){
+        QColor *currentBackgroundColor = currentFigureToPaint->getBackgroundColor();
+        glColor3f(currentBackgroundColor->redF(), currentBackgroundColor->greenF(), currentBackgroundColor->blueF());
 
-    //     glColor3f(1.0f, 0.0f, 0.0f);
-    //     glVertex3f(0.5f, 0.5f, 0.0f);
+        QList<Point*> *figurePoints = currentFigureToPaint->getPoints();
 
-    //     glColor3f(1.0f, 0.0f, 1.0f);
-    //     glVertex3f(0.5f, -0.5f, 0.0f);
+        for(int jndex = 0; jndex < figurePoints->size(); jndex++){
+            Point* nextPoint = figurePoints->at(jndex);
 
-    //     glColor3f(1.0f, 0.0f, 1.0f);
-    //     glVertex3f(-0.5f, -0.5f, 0.0f);
-    //     glEnd();
+            if(nextPoint){
+                glVertex2f(nextPoint->get_x(), nextPoint->get_y());
+                qDebug() << "Точка:" << nextPoint->get_x() << nextPoint->get_y();
+            }
+        }
 
-    //     glBegin(GL_TRIANGLES);
-    //     glColor3f(1.0f, 0.0f, 0.0f);
-    //     glVertex3f(-0.5f, 0.5f, 0.0f);
+        qDebug() << "Фигура " << currentFigureToPaint << " отрисована";
+        glEnd();
 
-    //     glColor3f(1.0f, 0.0f, 0.0f);
-    //     glVertex3f(0.5f, 0.5f, 0.0f);
+        paintBorder(currentFigureToPaint, figurePoints);
+    }
+}
 
-    //     glColor3f(1.0f, 0.0f, 1.0f);
-    //     glVertex3f(0.0f, 0.0f, 0.0f);
-    //     glEnd();
-    // }
+void OGLPainter::paintBorder(Figure *figureToPaint, QList<Point *> *figuresBorderPoints)
+{
+    if(figureToPaint->getBorderWidth() <= 0) {return;}
+
+    if(figureToPaint->getBorderWidth() > 0){
+        glLineWidth(figureToPaint->getBorderWidth());
+        QColor *currentBorderColor = figureToPaint->getBorderColor();
+        glColor3f(currentBorderColor->redF(), currentBorderColor->greenF(), currentBorderColor->blueF());
+
+        glBegin(GL_LINE_LOOP);
+        for(int jndex = 0; jndex < figuresBorderPoints->size(); jndex++){
+            Point* nextPoint = figuresBorderPoints->at(jndex);
+
+            if(nextPoint){
+                glVertex2f(nextPoint->get_x(), nextPoint->get_y());
+                qDebug() << "Точка рамки:" << nextPoint->get_x() << nextPoint->get_y();
+            }
+        }
+        glEnd();
+
+        qDebug() << "Рамка фигуры " << figureToPaint << " отрисована";
+    }
 }

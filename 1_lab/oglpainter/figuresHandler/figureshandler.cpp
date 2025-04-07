@@ -24,20 +24,9 @@ Figure* FiguresHandler::getFigure(int index)
 void FiguresHandler::deleteFigures()
 {
     qDebug() << "без очистки";
+    figuresList->clear();
     // for(Figure *someFigure : *figuresList){
     //     delete someFigure;
-    // }
-}
-
-void FiguresHandler::paintFigures()
-{
-    for(int index = 0; index < figuresList->length(); index++){
-        figuresList->value(index)->paint();
-        qDebug() << "Фигура " << figuresList->value(index) << " отрисована";
-    }
-    qDebug() << "Все фигуры отрисованы";
-    // for(Figure *figure : *figuresList){
-    //     figure->paint();
     // }
 }
 

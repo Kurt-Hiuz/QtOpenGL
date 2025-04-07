@@ -11,6 +11,7 @@ AddNewFigureDialogWindow::AddNewFigureDialogWindow() {
 
 AddNewFigureDialogWindow::~AddNewFigureDialogWindow()
 {
+    qDebug() << "Вызван деструктор AddNewFigureDialogWindow";
     // TODO: сделать удаление интерфейса
 }
 
@@ -29,6 +30,7 @@ void AddNewFigureDialogWindow::createInterface()
     addPointBtn = new QPushButton("Добавить точку");
     deletePointBtn = new QPushButton("Удалить точку");
     saveFigureBtn = new QPushButton("Сохранить фигуру");
+    clearInputsBtn = new QPushButton("Очистить форму");
 
     hint_X = new QLabel("Коорд. х: ");
     hint_Y = new QLabel("Коорд. у: ");
@@ -63,7 +65,7 @@ void AddNewFigureDialogWindow::createInterface()
 
     dimensionComboBox = new QComboBox();
     dimensionComboBox->setPlaceholderText("Выбор размерности фигуры");
-    dimensionComboBox->currentData(2);
+    dimensionComboBox->currentData(-1);
     dimensionComboBox->addItem("2D", 2);
     dimensionComboBox->addItem("3D", 3);
     dimensionComboBox->addItem("4D", 4);
@@ -74,17 +76,21 @@ void AddNewFigureDialogWindow::createInterface()
     currentPointsComboBox->setMinimumWidth(200);
 
     oglModeComboBox = new QComboBox();
-    oglModeComboBox->setPlaceholderText("Формат рисования");
+    oglModeComboBox->setPlaceholderText("Способ рисования");
+    oglModeComboBox->currentData(-1);
     oglModeComboBox->addItem("Точки", GL_POINTS);
     oglModeComboBox->addItem("Линии", GL_LINES);
     oglModeComboBox->addItem("Незамкнутая ломаная", GL_LINE_STRIP);
     oglModeComboBox->addItem("Замкнутая ломаная", GL_LINE_LOOP);
+    oglModeComboBox->addItem("Окружность", GL_LINE_LOOP);
     oglModeComboBox->addItem("Выпукл. многоуг.", GL_POLYGON);
     oglModeComboBox->addItem("Треугольники", GL_TRIANGLES);
     oglModeComboBox->addItem("Полоса труег.", GL_TRIANGLE_STRIP);
     oglModeComboBox->addItem("Веер треугол.", GL_TRIANGLE_FAN);
     oglModeComboBox->addItem("Четвёрка вершин", GL_QUADS);
     oglModeComboBox->addItem("Полоса четырёхуг.", GL_QUAD_STRIP);
+
+    setInterfaceDisabled(true);
 
     QHBoxLayout* pointHLayout_X = new QHBoxLayout();
     pointHLayout_X->addWidget(hint_X);
@@ -122,6 +128,7 @@ void AddNewFigureDialogWindow::createInterface()
     colorHLayout->addWidget(hint_border);
     colorHLayout->addWidget(borderWidthSpinBox);
     colorHLayout->addWidget(saveFigureBtn);
+    colorHLayout->addWidget(clearInputsBtn);
 
     mainVLayout = new QVBoxLayout();
     mainVLayout->addLayout(managePointHLayout);
@@ -130,13 +137,32 @@ void AddNewFigureDialogWindow::createInterface()
     this->setLayout(mainVLayout);
     this->setWindowTitle("Добавление фигуры");
 
-    connect(dimensionComboBox, &QComboBox::currentIndexChanged, this, &AddNewFigureDialogWindow::activatePointSpinBoxes);
+    connect(dimensionComboBox, &QComboBox::currentIndexChanged, this, &AddNewFigureDialogWindow::activateInterface);
+    connect(oglModeComboBox, &QComboBox::currentIndexChanged, this, &AddNewFigureDialogWindow::activateSaveBtn);
 
     connect(chooseBackgroundColorBtn, &QPushButton::clicked, this, &AddNewFigureDialogWindow::showBackgroundColorInput);
     connect(chooseBorderColorBtn, &QPushButton::clicked, this, &AddNewFigureDialogWindow::showBorderColorInput);
     connect(addPointBtn, &QPushButton::clicked, this, &AddNewFigureDialogWindow::addPointBtnIntoCurrentPointsComboBox);
     connect(deletePointBtn, &QPushButton::clicked, this, &AddNewFigureDialogWindow::deleteSelectedPoint);
     connect(saveFigureBtn, &QPushButton::clicked, this, &AddNewFigureDialogWindow::saveNewFigure);
+    connect(clearInputsBtn, &QPushButton::clicked, this, &AddNewFigureDialogWindow::clearInputs);
+}
+
+void AddNewFigureDialogWindow::setInterfaceDisabled(bool flag)
+{
+    chooseBackgroundColorBtn->setDisabled(flag);
+    chooseBorderColorBtn->setDisabled(flag);
+    addPointBtn->setDisabled(flag);
+    deletePointBtn->setDisabled(flag);
+    saveFigureBtn->setDisabled(flag);
+    pointSpinBox_X->setDisabled(flag);
+    pointSpinBox_Y->setDisabled(flag);
+    pointSpinBox_Z->setDisabled(flag);
+    pointSpinBox_W->setDisabled(flag);
+    borderWidthSpinBox->setDisabled(flag);
+    currentPointsComboBox->setDisabled(flag);
+    oglModeComboBox->setDisabled(flag);
+    clearInputsBtn->setDisabled(flag);
 }
 
 void AddNewFigureDialogWindow::showBackgroundColorInput()
@@ -184,8 +210,10 @@ void AddNewFigureDialogWindow::deleteSelectedPoint()
     currentPointsComboBox->removeItem(currentPointsComboBox->currentIndex());
 }
 
-void AddNewFigureDialogWindow::activatePointSpinBoxes()
+void AddNewFigureDialogWindow::activateInterface()
 {
+    setInterfaceDisabled(false);
+    saveFigureBtn->setDisabled(true);               //  пока не выберется формат рисования, кнопка должна быть отключена
     currentPointsComboBox->clear();
     if(dimensionComboBox->currentData() == 2){
         pointSpinBox_Z->setDisabled(true);
@@ -204,9 +232,28 @@ void AddNewFigureDialogWindow::activatePointSpinBoxes()
     }
 }
 
+void AddNewFigureDialogWindow::activateSaveBtn()
+{
+    saveFigureBtn->setDisabled(false);
+}
+
 void AddNewFigureDialogWindow::saveNewFigure()
 {
     Figure *newFigure = new Figure();
+
+    newFigure->setPaintMode(oglModeComboBox->currentData().value<GLenum>());
+    newFigure->setBorderWidth(borderWidthSpinBox->value());
+    newFigure->setBorderColor(new QColor(chooseBorderColorBtn->palette().button().color()));
+    newFigure->setDimensional(dimensionComboBox->currentData().toInt());
+    newFigure->setBackgroundColor(new QColor(chooseBackgroundColorBtn->palette().button().color()));
+
+    // if(oglModeComboBox->currentText() == "Окружность"){
+    //     //
+    //     newFigure->setIsCicle(true);
+    //     emit newFigureCreated(newFigure);
+    //     return;
+    // }
+
     for(int index = 0; index < currentPointsComboBox->count(); index++){
         Point *newPoint = new Point();
         QList<QVariant> ComboBoxListOfPoints = currentPointsComboBox->itemData(index).toList();
@@ -231,12 +278,24 @@ void AddNewFigureDialogWindow::saveNewFigure()
         newFigure->addNewPoint(newPoint);
         // delete newPoint;
     }
-    newFigure->setPaintMode(oglModeComboBox->currentData().value<GLenum>());
-    qDebug() << "мод рисования "<< oglModeComboBox->currentData().value<GLenum>();
-    newFigure->setBorderWidth(borderWidthSpinBox->value());
-    newFigure->setDimensional(dimensionComboBox->currentData().toInt());
+
+
     // TODO сделать сохранение цвета
 
     emit newFigureCreated(newFigure);
     // delete newFigure;
+}
+
+void AddNewFigureDialogWindow::clearInputs()
+{
+    pointSpinBox_X->setValue(0);
+    pointSpinBox_Y->setValue(0);
+    pointSpinBox_Z->setValue(0);
+    pointSpinBox_W->setValue(0);
+    borderWidthSpinBox->setValue(0);
+    dimensionComboBox->setPlaceholderText("Выбор размерности фигуры");
+    currentPointsComboBox->clear();
+    oglModeComboBox->setPlaceholderText("Формат рисования");
+    chooseBackgroundColorBtn->setStyleSheet("background-color: ");
+    chooseBorderColorBtn->setStyleSheet("background-color: ");
 }

@@ -14,7 +14,6 @@ public:
     void addNewFigure(Figure *newFigure);
     Figure* getFigure(int index);
     void deleteFigures();
-    void paintFigures();
     int countFigures();
 
 private:

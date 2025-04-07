@@ -25,6 +25,8 @@ protected:
 
 private:
     FiguresHandler *figuresHandler;
+    void paintFigure(Figure *currentFigureToPaint);
+    void paintBorder(Figure *figureToPaint, QList<Point*> *figuresBorderPoints);
 };
 
 #endif // OGLPAINTER_H

@@ -3,6 +3,7 @@
 
 #include <QList>
 #include <GL/gl.h>
+#include <QColor>
 
 #include "oglpainter/point/point.h"
 
@@ -17,25 +18,39 @@ public:
 
     void setPaintMode(GLenum newMode);
     GLenum getPaintMode();
+
     void setBorderWidth(int newBorderWidth);
+    int getBorderWidth();
+
     void setDimensional(int newDimensional);
     int getDimensional();
-    QList<Point*>* getPoints();
+
+    void setBackgroundColor(QColor *newColor);
+    QColor *getBackgroundColor();
+
+    void setBorderColor(QColor *newColor);
+    QColor *getBorderColor();
+
     void addNewPoint(Point *newPoint);
-    void paint();
-    void paint2f();
-    void paint3f();
-    void paint4f();
+    QList<Point*>* getPoints();
+
+    void setIsCicle(bool isItCircle);
+    bool getIsCircle();
+    // void paint();
+    // void paint2f();
+    // void paint3f();
+    // void paint4f();
 
     QString toDegug();
 
 private:
     QList<Point*> *points = new QList<Point*>();
     int borderWidth;
-    float borderColor;
-    float backgroundColor;
+    QColor *borderColor;
+    QColor *backgroundColor;
     int dimensional;
     GLenum paintMode;
+    bool isCircle;
 };
 
 #endif // FIGURE_H
