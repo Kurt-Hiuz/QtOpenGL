@@ -5,8 +5,9 @@
 
 #include "appMenu/appmenu.h"
 
-#include "dialogWindows/i_dialogwindow.h"
 #include "dialogWindows/addNewFigureDialogWindow/addnewfiguredialogwindow.h"
+#include "oglpainter/figure/figure.h"
+#include "oglpainter/oglpainter.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -28,9 +29,11 @@ private:
     Ui::MainWindow *ui;
 
     AppMenu *appMenu;
-    I_DialogWindow* addNewPointDialogWindow;
+    AddNewFigureDialogWindow* addNewFigureDialogWindow;
+    OGLPainter* openGL_painter;
 
 private slots:
     void showAddNewFigureDialogWindow();
+    void paintNewFigure(Figure *newFigure);
 };
 #endif // MAINWINDOW_H

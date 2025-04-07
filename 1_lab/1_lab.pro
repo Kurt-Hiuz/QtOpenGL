@@ -12,18 +12,24 @@ SOURCES += \
     appMenu/appmenu.cpp \
     main.cpp \
     mainwindow.cpp \
+    oglpainter/figure/figure.cpp \
+    oglpainter/figuresHandler/figureshandler.cpp \
     oglpainter/oglpainter.cpp \
     dialogWindows/addNewFigureDialogWindow/addnewfiguredialogwindow.cpp \
     dialogWindows/i_dialogwindow.cpp \
+    oglpainter/point/point.cpp \
     testFolder/oglsquare.cpp \
     testFolder2/nooglsquare2.cpp
 
 HEADERS += \
     appMenu/appmenu.h \
     mainwindow.h \
+    oglpainter/figure/figure.h \
+    oglpainter/figuresHandler/figureshandler.h \
     oglpainter/oglpainter.h \
     dialogWindows/addNewFigureDialogWindow/addnewfiguredialogwindow.h \
     dialogWindows/i_dialogwindow.h \
+    oglpainter/point/point.h \
     testFolder/oglsquare.h \
     testFolder2/nooglsquare2.h
 

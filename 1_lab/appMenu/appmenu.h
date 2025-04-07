@@ -1,6 +1,7 @@
 #ifndef APPMENU_H
 #define APPMENU_H
 
+#include "oglpainter/figure/figure.h"
 #include <QWidget>
 #include <QPushButton>
 #include <QVBoxLayout>
