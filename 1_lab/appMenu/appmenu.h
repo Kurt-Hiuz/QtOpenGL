@@ -5,6 +5,7 @@
 #include <QWidget>
 #include <QPushButton>
 #include <QVBoxLayout>
+#include <QComboBox>
 
 class AppMenu : public QWidget
 {
@@ -14,12 +15,15 @@ public:
     void createInterface();
     QPushButton* getClearPainterBtn() const { return clearPainterBtn; }
     QPushButton* getAddNewFigureBtn() const { return addNewFigureBtn; }
+    QComboBox* getScalePainterComboBox() const {return scalePainter;}
 
 private:
     QPushButton *addNewFigureBtn;
     QPushButton *editRedoBtn;
     QPushButton *editUndoBtn;
     QPushButton *clearPainterBtn;
+
+    QComboBox *scalePainter;
 
     QVBoxLayout *verticalLayout;
 };

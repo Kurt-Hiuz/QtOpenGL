@@ -35,5 +35,6 @@ private:
 private slots:
     void showAddNewFigureDialogWindow();
     void paintNewFigure(Figure *newFigure);
+    void changeScalePainter();
 };
 #endif // MAINWINDOW_H

@@ -31,6 +31,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(appMenu->getClearPainterBtn(), &QPushButton::clicked, openGL_painter, &OGLPainter::clearSpace);
     connect(appMenu->getAddNewFigureBtn(), &QPushButton::clicked, this, &MainWindow::showAddNewFigureDialogWindow);
+    connect(appMenu->getScalePainterComboBox(), &QComboBox::currentIndexChanged, this, &MainWindow::changeScalePainter);
     connect(addNewFigureDialogWindow,  &AddNewFigureDialogWindow::newFigureCreated, this, &MainWindow::paintNewFigure);
 }
 
@@ -64,4 +65,9 @@ void MainWindow::paintNewFigure(Figure *newFigure)
 
     qDebug() << "Фигура не содержит точек!";
     // delete newFigure;
+}
+
+void MainWindow::changeScalePainter()
+{
+    openGL_painter->setNewScale(appMenu->getScalePainterComboBox()->currentData().toFloat());
 }

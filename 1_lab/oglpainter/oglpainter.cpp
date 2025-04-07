@@ -16,6 +16,12 @@ void OGLPainter::repaint(Figure *newFigure)
     update();
 }
 
+void OGLPainter::setNewScale(float newScale)
+{
+    this->scalePainter = newScale;
+    update();
+}
+
 void OGLPainter::clearSpace()
 {
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -37,8 +43,8 @@ void OGLPainter::paintGL()
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    float zoom = 10.0f; // Полотно увеличено в 10 раз
-    glOrtho(0.0,zoom*1.0,0.0,zoom*1.0,zoom*-1.0,zoom*1.0);
+
+    glOrtho(0.0,scalePainter*1.0,0.0,scalePainter*1.0,scalePainter*-1.0,scalePainter*1.0);
 
     // glBegin(4);
     // glColor3f(1.0f, 0.0f, 1.0f);

@@ -15,6 +15,7 @@ public:
     ~OGLPainter();
 
     void repaint(Figure *newFigure);
+    void setNewScale(float newScale);
 
 public slots:
     void clearSpace();
@@ -24,6 +25,7 @@ protected:
     void paintGL();
 
 private:
+    float scalePainter = 10.0f; // Полотно увеличено в 10 раз по умолчанию
     FiguresHandler *figuresHandler;
     void paintFigure(Figure *currentFigureToPaint);
     void paintCircle(float centerX, float centerY, float radius);
