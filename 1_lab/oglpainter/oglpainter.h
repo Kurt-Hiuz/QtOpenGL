@@ -28,7 +28,8 @@ private:
     float scalePainter = 10.0f; // Полотно увеличено в 10 раз по умолчанию
     FiguresHandler *figuresHandler;
     void paintFigure(Figure *currentFigureToPaint);
-    void paintCircle(float centerX, float centerY, float radius);
+    void paintCircle(Figure *circleToPaint);
+    void paintCircleBorder(Figure *circleToPaint);
     void paintBorder(Figure *figureToPaint, QList<Point*> *figuresBorderPoints);
 };
 

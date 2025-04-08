@@ -94,9 +94,10 @@ void OGLPainter::paintFigure(Figure *currentFigureToPaint)
         QList<Point*> *figurePoints = currentFigureToPaint->getPoints();
 
         if(currentFigureToPaint->getIsCircle()){
-            paintCircle(figurePoints->value(0)->get_x(), figurePoints->value(0)->get_y(), currentFigureToPaint->getRadius());
+            paintCircle(currentFigureToPaint);
             qDebug() << "Отрисован круг " << currentFigureToPaint;
             qDebug() << "Центр: " << figurePoints->value(0)->get_x() << "; " << figurePoints->value(0)->get_y() << "| Радиус " << currentFigureToPaint->getRadius();
+            paintCircleBorder(currentFigureToPaint);
             return;
         }
 
@@ -117,13 +118,43 @@ void OGLPainter::paintFigure(Figure *currentFigureToPaint)
     }
 }
 
-void OGLPainter::paintCircle(float centerX, float centerY, float radius)
+void OGLPainter::paintCircle(Figure *circleToPaint)
 {
+    QList<Point*> *ciclePoints = circleToPaint->getPoints();
+
+    float centerX = ciclePoints->value(0)->get_x();
+    float centerY = ciclePoints->value(0)->get_y();
+
+    float radius = circleToPaint->getRadius();
+
     glBegin(GL_TRIANGLE_FAN);
-    glVertex2f(centerX, centerY);
+    glVertex2f(ciclePoints->value(0)->get_x(), centerY);
+
     for (int i = 0; i < 100000; i++) {
         float angle = 2.0f * M_PI * float(i) / float(100000);
         glVertex2f(centerX + radius * cosf(angle),  centerY + radius * sinf(angle));
+    }
+    glEnd();
+}
+
+void OGLPainter::paintCircleBorder(Figure *circleToPaint)
+{
+    QColor *borderColor = circleToPaint->getBorderColor();
+    glColor3f(borderColor->redF(), borderColor->greenF(), borderColor->blueF());
+
+    QList<Point*> *ciclePoints = circleToPaint->getPoints();
+
+    float centerX = ciclePoints->value(0)->get_x();
+    float centerY = ciclePoints->value(0)->get_y();
+
+    float radius = circleToPaint->getRadius();
+
+    glLineWidth(circleToPaint->getBorderWidth());
+
+    glBegin(GL_LINE_LOOP);
+    for (int i = 0; i < 100000; i++) {
+        float angle = 2.0f * M_PI * float(i) / 100000.0f;
+        glVertex2f(centerX + radius * cosf(angle), centerY + radius * sinf(angle));
     }
     glEnd();
 }
