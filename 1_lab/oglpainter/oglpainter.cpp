@@ -87,8 +87,6 @@ void OGLPainter::paintGL()
 
 void OGLPainter::paintFigure(Figure *currentFigureToPaint)
 {
-    glBegin(currentFigureToPaint->getPaintMode());
-
     if(currentFigureToPaint->getDimensional() == 2){
         QColor *currentBackgroundColor = currentFigureToPaint->getBackgroundColor();
         glColor3f(currentBackgroundColor->redF(), currentBackgroundColor->greenF(), currentBackgroundColor->blueF());
@@ -102,6 +100,7 @@ void OGLPainter::paintFigure(Figure *currentFigureToPaint)
             return;
         }
 
+        glBegin(currentFigureToPaint->getPaintMode());
         for(int jndex = 0; jndex < figurePoints->size(); jndex++){
             Point* nextPoint = figurePoints->at(jndex);
 
