@@ -32,6 +32,9 @@ MainWindow::MainWindow(QWidget *parent)
     connect(appMenu->getClearPainterBtn(), &QPushButton::clicked, openGL_painter, &OGLPainter::clearSpace);
     connect(appMenu->getAddNewFigureBtn(), &QPushButton::clicked, this, &MainWindow::showAddNewFigureDialogWindow);
     connect(appMenu->getScalePainterComboBox(), &QComboBox::currentIndexChanged, this, &MainWindow::changeScalePainter);
+    connect(appMenu->getAngleXSceneSlider(), &QSlider::valueChanged, this, &MainWindow::rotateXScene);
+    connect(appMenu->getAngleYSceneSlider(), &QSlider::valueChanged, this, &MainWindow::rotateYScene);
+    connect(appMenu->getAngleZSceneSlider(), &QSlider::valueChanged, this, &MainWindow::rotateZScene);
     connect(addNewFigureDialogWindow,  &AddNewFigureDialogWindow::newFigureCreated, this, &MainWindow::paintNewFigure);
 }
 
@@ -70,4 +73,19 @@ void MainWindow::paintNewFigure(Figure *newFigure)
 void MainWindow::changeScalePainter()
 {
     openGL_painter->setNewScale(appMenu->getScalePainterComboBox()->currentData().toFloat());
+}
+
+void MainWindow::rotateYScene(int angleY)
+{
+    openGL_painter->setNewAngelYScene(angleY);
+}
+
+void MainWindow::rotateZScene(int angleZ)
+{
+    openGL_painter->setNewAngelZScene(angleZ);
+}
+
+void MainWindow::rotateXScene(int angleX)
+{
+    openGL_painter->setNewAngelXScene(angleX);
 }

@@ -36,5 +36,8 @@ private slots:
     void showAddNewFigureDialogWindow();
     void paintNewFigure(Figure *newFigure);
     void changeScalePainter();
+    void rotateXScene(int angleX);
+    void rotateYScene(int angleY);
+    void rotateZScene(int angleZ);
 };
 #endif // MAINWINDOW_H

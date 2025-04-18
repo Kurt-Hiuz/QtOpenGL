@@ -41,23 +41,23 @@ void AddNewFigureDialogWindow::createInterface()
 
     pointSpinBox_X = new QDoubleSpinBox();
     pointSpinBox_X->setSingleStep(0.01);
-    // pointSpinBox_X->setRange(-3.0, 3.0);
+    pointSpinBox_X->setRange(-30.0, 30.0);
     pointSpinBox_X->setSuffix(" f");
 
     pointSpinBox_Y = new QDoubleSpinBox();
     pointSpinBox_Y->setSingleStep(0.01);
-    // pointSpinBox_Y->setRange(-3.0, 3.0);
+    pointSpinBox_Y->setRange(-30.0, 30.0);
     pointSpinBox_Y->setSuffix(" f");
 
     pointSpinBox_Z = new QDoubleSpinBox();
     pointSpinBox_Z->setSingleStep(0.01);
-    // pointSpinBox_Z->setRange(-3.0, 3.0);
+    pointSpinBox_Z->setRange(-30.0, 30.0);
     pointSpinBox_Z->setSuffix(" f");
     pointSpinBox_Z->setDisabled(true);
 
     pointSpinBox_W = new QDoubleSpinBox();
     pointSpinBox_W->setSingleStep(0.01);
-    // pointSpinBox_W->setRange(-3.0, 3.0);
+    pointSpinBox_W->setRange(-30.0, 30.0);
     pointSpinBox_W->setSuffix(" f");
     pointSpinBox_W->setDisabled(true);
 
@@ -206,10 +206,10 @@ void AddNewFigureDialogWindow::addPointBtnIntoCurrentPointsComboBox()
         currentPointsComboBox->addItem(QString("x: "+pointSpinBox_X->cleanText()+", y: "+pointSpinBox_Y->cleanText()), QVariant::fromValue(QList<QVariant>({pointSpinBox_X->value(), pointSpinBox_Y->value()})));
         qDebug() << "Добавлена новая точка в список" << currentPointsComboBox->itemData(0);
     }
-    // if(dimensionComboBox->currentData() == 3){
-    //     currentPointsComboBox->addItem(QString("x: "+pointSpinBox_X->cleanText()+", y: "+pointSpinBox_Y->cleanText()+", z: "+pointSpinBox_Z->cleanText()), Point(pointSpinBox_X->value(), pointSpinBox_Y->value(), pointSpinBox_Z->value()));
-    //     qDebug() << currentPointsComboBox->itemData(0);
-    // }
+    if(dimensionComboBox->currentData() == 3){
+        currentPointsComboBox->addItem(QString("x: "+pointSpinBox_X->cleanText()+", y: "+pointSpinBox_Y->cleanText()+", z: "+pointSpinBox_Z->cleanText()), QVariant::fromValue(QList<QVariant>({pointSpinBox_X->value(), pointSpinBox_Y->value(), pointSpinBox_Z->value()})));
+        qDebug() << currentPointsComboBox->itemData(0);
+    }
     // if(dimensionComboBox->currentData() == 4){
     //     currentPointsComboBox->addItem(QString("x: "+pointSpinBox_X->cleanText()+", y: "+pointSpinBox_Y->cleanText()+", z: "+pointSpinBox_W->cleanText()+", w: "+pointSpinBox_W->cleanText()), Point(pointSpinBox_X->value(), pointSpinBox_Y->value(), pointSpinBox_Z->value(), pointSpinBox_W->value()));
     // }
