@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QOpenGLWidget>
 #include <QOpenGLFunctions>
+// #include <GL/glaux.h>
 
 #include "oglpainter/figuresHandler/figureshandler.h"
 
@@ -26,6 +27,7 @@ public slots:
 protected:
     void initializeGL();
     void paintGL();
+    void resizeGL(int w, int h);
 
 private:
     float scalePainter = 10.0f; // Полотно увеличено в 10 раз по умолчанию
@@ -37,9 +39,11 @@ private:
     void paintFigure(Figure *currentFigureToPaint);
     void paint2DFigure(Figure *current2DFigureToPaint);
     void paint3DFigure(Figure *current3DFigureToPaint);
+    void paintMadedFigure(Figure *madedFigure);
+    void paintCube(Figure *cubeToPaint);
     void paintCircle(Figure *circleToPaint);
     void paintCircleBorder(Figure *circleToPaint);
-    void paint2DBorder(Figure *figureToPaint, QList<Point*> *figuresBorderPoints);
+    void paintBorder(Figure *figureToPaint, QList<Point*> *figuresBorderPoints);
 };
 
 #endif // OGLPAINTER_H

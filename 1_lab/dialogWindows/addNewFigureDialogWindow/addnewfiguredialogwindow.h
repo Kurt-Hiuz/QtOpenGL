@@ -41,11 +41,13 @@ private:
     QLabel* hint_W;
     QLabel* hint_border;
     QLabel* hint_radius;
+    QLabel* hint_height;
     QDoubleSpinBox* pointSpinBox_X;
     QDoubleSpinBox* pointSpinBox_Y;
     QDoubleSpinBox* pointSpinBox_Z;
     QDoubleSpinBox* pointSpinBox_W;
     QDoubleSpinBox* radiusSpinBox;
+    QDoubleSpinBox* heightSpinBox;
     QSpinBox* borderWidthSpinBox;
     QComboBox* dimensionComboBox;
     QComboBox* currentPointsComboBox;
@@ -62,7 +64,7 @@ private slots:
     void addPointBtnIntoCurrentPointsComboBox();
     void deleteSelectedPoint();
     void activateInterface();
-    void activateSaveBtnAndCheckCircle();
+    void activateSaveBtnAndCheckFigure();
     void saveNewFigure();
     void clearInputs();
 };

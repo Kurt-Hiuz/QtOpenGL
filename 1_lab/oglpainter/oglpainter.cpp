@@ -1,4 +1,5 @@
 #include "oglpainter.h"
+#include <GL/glaux.h>
 
 OGLPainter::OGLPainter(QWidget *parent) : QOpenGLWidget(parent)
 {
@@ -59,6 +60,7 @@ void OGLPainter::initializeGL()
 {
     initializeOpenGLFunctions();
     glClearColor(1, 0.5, 1, 1);
+    glEnable(GL_DEPTH_TEST);
     glTranslatef(5.0f, 5.0f, 5.0f);
 }
 
@@ -73,7 +75,9 @@ void OGLPainter::paintGL()
     glRotatef(angleRotateXScene, 1.0f, 0.0f, 0.0f);
     glRotatef(angleRotateYScene, 0.0f, 1.0f, 0.0f);
     glRotatef(angleRotateZScene, 0.0f, 0.0f, 1.0f);
-    glOrtho(0.0,scalePainter*1.0,0.0,scalePainter*1.0,scalePainter*-1.0,scalePainter*1.0);
+    glOrtho(0.0,scalePainter*1.0,0.0,scalePainter*1.0,scalePainter*-0.5,scalePainter*0.5);
+    // glOrtho(0.0,scalePainter*1.0,0.0,scalePainter*1.0,0.0,scalePainter*1.0);
+    // glFrustum(0.0,scalePainter*1.0,0.0,scalePainter*1.0,scalePainter*-1.0,scalePainter*1.0);
 
     // glBegin(4);
     // glColor3f(1.0f, 0.0f, 1.0f);
@@ -109,15 +113,26 @@ void OGLPainter::paintGL()
         glVertex3f(0.0f, 0.0f, 0.0f);
 
         glColor3f(0.0f, 1.0f, 0.0f);
-        glVertex3f(0.5f, -0.5f, 0.0f);
+        glVertex3f(0.5f, 0.5f, 0.0f);
 
         glColor3f(1.0f, 0.0f, 1.0f);
-        glVertex3f(-0.5f, -0.5f, 0.0f);
+        glVertex3f(0.5f, 0.5f, 0.0f);
         glEnd();
+
+        // auxSolidTeapot(2.0f);
+}
+
+void OGLPainter::resizeGL(int w, int h)
+{
+    glViewport(0, 0, w, h);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glFrustum(0.0,scalePainter*1.0,0.0,scalePainter*1.0,scalePainter*-1.0,scalePainter*1.0);
 }
 
 void OGLPainter::paintFigure(Figure *currentFigureToPaint)
 {
+    qDebug() << "Размерность фигуры: " << currentFigureToPaint->getDimensional();
     if(currentFigureToPaint->getDimensional() == 2){
         paint2DFigure(currentFigureToPaint);
         return;
@@ -157,7 +172,7 @@ void OGLPainter::paint2DFigure(Figure *current2DFigureToPaint)
     qDebug() << "Фигура " << current2DFigureToPaint << " отрисована";
     glEnd();
 
-    paint2DBorder(current2DFigureToPaint, figurePoints);
+    paintBorder(current2DFigureToPaint, figurePoints);
 }
 
 void OGLPainter::paint3DFigure(Figure *current3DFigureToPaint)
@@ -165,9 +180,13 @@ void OGLPainter::paint3DFigure(Figure *current3DFigureToPaint)
     QColor *currentBackgroundColor = current3DFigureToPaint->getBackgroundColor();
     glColor3f(currentBackgroundColor->redF(), currentBackgroundColor->greenF(), currentBackgroundColor->blueF());
 
-    QList<Point*> *figurePoints = current3DFigureToPaint->getPoints();
+    if(current3DFigureToPaint->getPaintMode() < 0){
+        paintMadedFigure(current3DFigureToPaint);
+        return;
+    }
 
-    //  TODO: сделать отрисовку сферы
+    qDebug() << "Установлен цвет: " << currentBackgroundColor->redF() << "|" << currentBackgroundColor->greenF() << "|" << currentBackgroundColor->blueF();
+    QList<Point*> *figurePoints = current3DFigureToPaint->getPoints();
 
     // if(current3DFigureToPaint->getIsCircle()){
     //     paintCircle(current3DFigureToPaint);
@@ -176,7 +195,6 @@ void OGLPainter::paint3DFigure(Figure *current3DFigureToPaint)
     //     paintCircleBorder(current3DFigureToPaint);
     //     return;
     // }
-
     glBegin(current3DFigureToPaint->getPaintMode());
     for(int jndex = 0; jndex < figurePoints->size(); jndex++){
         Point* nextPoint = figurePoints->at(jndex);
@@ -190,7 +208,103 @@ void OGLPainter::paint3DFigure(Figure *current3DFigureToPaint)
     qDebug() << "Фигура " << current3DFigureToPaint << " отрисована";
     glEnd();
 
-    paint2DBorder(current3DFigureToPaint, figurePoints);
+    paintBorder(current3DFigureToPaint, figurePoints);
+}
+
+void OGLPainter::paintMadedFigure(Figure *madedFigure)
+{
+    if(madedFigure->getPaintMode() == -GL_QUADS){
+        paintCube(madedFigure);
+    }
+}
+
+void OGLPainter::paintCube(Figure *cubeToPaint)
+{    
+    QList<Point*> *cubePoints = cubeToPaint->getPoints();
+
+    float beginX = cubePoints->value(0)->get_x();
+    float beginY = cubePoints->value(0)->get_y();
+    float beginZ = cubePoints->value(0)->get_z();
+
+    float height = cubeToPaint->getHeight();
+
+    glBegin(GL_QUADS);
+
+    glVertex3f(beginX,  beginY, beginZ);
+    glVertex3f(beginX,  beginY+height, beginZ);
+    glVertex3f(beginX+height,  beginY+height, beginZ);
+    glVertex3f(beginX+height,  beginY, beginZ);
+
+    glVertex3f(beginX,  beginY, beginZ);
+    glVertex3f(beginX,  beginY+height, beginZ);
+    glVertex3f(beginX,  beginY+height, beginZ+height);
+    glVertex3f(beginX,  beginY, beginZ+height);
+
+    glVertex3f(beginX,  beginY, beginZ);
+    glVertex3f(beginX+height,  beginY, beginZ);
+    glVertex3f(beginX+height,  beginY, beginZ+height);
+    glVertex3f(beginX,  beginY, beginZ+height);
+
+    glVertex3f(beginX+height,  beginY+height, beginZ+height);
+    glVertex3f(beginX+height,  beginY+height, beginZ);
+    glVertex3f(beginX+height,  beginY, beginZ);
+    glVertex3f(beginX+height,  beginY, beginZ+height);
+
+    glVertex3f(beginX+height,  beginY+height, beginZ+height);
+    glVertex3f(beginX+height,  beginY, beginZ+height);
+    glVertex3f(beginX,  beginY, beginZ+height);
+    glVertex3f(beginX,  beginY+height, beginZ+height);
+
+    glVertex3f(beginX,  beginY+height, beginZ);
+    glVertex3f(beginX+height,  beginY+height, beginZ);
+    glVertex3f(beginX+height,  beginY+height, beginZ+height);
+    glVertex3f(beginX,  beginY+height, beginZ+height);
+
+    glEnd();
+
+    QColor *borderColor = cubeToPaint->getBorderColor();
+    qDebug() << "Ширина рамки куба: " << cubeToPaint->getBorderWidth();
+    glColor3f(borderColor->redF(), borderColor->greenF(), borderColor->blueF());
+    glLineWidth(cubeToPaint->getBorderWidth());
+    glBegin(GL_LINE_LOOP);
+
+    glVertex3f(beginX,  beginY, beginZ);
+    glVertex3f(beginX,  beginY+height, beginZ);
+    glVertex3f(beginX+height,  beginY+height, beginZ);
+    glVertex3f(beginX+height,  beginY, beginZ);
+    glVertex3f(beginX,  beginY, beginZ);
+
+    glVertex3f(beginX,  beginY+height, beginZ);
+    glVertex3f(beginX,  beginY+height, beginZ+height);
+    glVertex3f(beginX,  beginY, beginZ+height);
+    glVertex3f(beginX,  beginY, beginZ);
+
+    glVertex3f(beginX,  beginY, beginZ);
+    glVertex3f(beginX+height,  beginY, beginZ);
+    glVertex3f(beginX+height,  beginY, beginZ+height);
+    glVertex3f(beginX,  beginY, beginZ+height);
+    glVertex3f(beginX,  beginY, beginZ);
+
+    glVertex3f(beginX+height,  beginY+height, beginZ+height);
+    glVertex3f(beginX+height,  beginY+height, beginZ);
+    glVertex3f(beginX+height,  beginY, beginZ);
+    glVertex3f(beginX+height,  beginY, beginZ+height);
+    glVertex3f(beginX+height,  beginY+height, beginZ+height);
+
+    glVertex3f(beginX+height,  beginY+height, beginZ+height);
+    glVertex3f(beginX+height,  beginY, beginZ+height);
+    glVertex3f(beginX,  beginY, beginZ+height);
+    glVertex3f(beginX,  beginY+height, beginZ+height);
+    glVertex3f(beginX+height,  beginY+height, beginZ+height);
+
+    glVertex3f(beginX,  beginY+height, beginZ);
+    glVertex3f(beginX+height,  beginY+height, beginZ);
+    glVertex3f(beginX+height,  beginY+height, beginZ+height);
+    glVertex3f(beginX,  beginY+height, beginZ+height);
+    glVertex3f(beginX,  beginY+height, beginZ);
+
+    qDebug() << "Куб " << cubeToPaint << " отрисован";
+    glEnd();
 }
 
 void OGLPainter::paintCircle(Figure *circleToPaint)
@@ -234,7 +348,7 @@ void OGLPainter::paintCircleBorder(Figure *circleToPaint)
     glEnd();
 }
 
-void OGLPainter::paint2DBorder(Figure *figureToPaint, QList<Point *> *figuresBorderPoints)
+void OGLPainter::paintBorder(Figure *figureToPaint, QList<Point *> *figuresBorderPoints)
 {
     if(figureToPaint->getBorderWidth() <= 0) {return;}
 
@@ -248,8 +362,15 @@ void OGLPainter::paint2DBorder(Figure *figureToPaint, QList<Point *> *figuresBor
             Point* nextPoint = figuresBorderPoints->at(jndex);
 
             if(nextPoint){
-                glVertex2f(nextPoint->get_x(), nextPoint->get_y());
-                qDebug() << "Точка рамки:" << nextPoint->get_x() << nextPoint->get_y();
+                if(figureToPaint->getDimensional() == 2){
+                    glVertex2f(nextPoint->get_x(), nextPoint->get_y());
+                    qDebug() << "Точка рамки:" << nextPoint->get_x() << nextPoint->get_y();
+                }
+
+                if(figureToPaint->getDimensional() == 3){
+                    glVertex3f(nextPoint->get_x(), nextPoint->get_y(), nextPoint->get_z());
+                    qDebug() << "Точка рамки:" << nextPoint->get_x() << nextPoint->get_y() << nextPoint->get_z();
+                }
             }
         }
         glEnd();

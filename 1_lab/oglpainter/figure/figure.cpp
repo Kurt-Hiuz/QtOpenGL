@@ -29,14 +29,14 @@ Figure::~Figure()
     // delete points;
 }
 
-void Figure::setPaintMode(GLenum newMode)
+void Figure::setPaintMode(int newMode)
 {
     this->paintMode = newMode;
 
     glColor3f(1.0f, 0.5f, 0.0f);                                                                                        // ОПРЕДЕЛЕНИЕ НАЧАЛЬНОГО ЦВЕТА
 }
 
-GLenum Figure::getPaintMode()
+int Figure::getPaintMode()
 {
     return this->paintMode;
 }
@@ -96,6 +96,16 @@ bool Figure::getIsCircle()
     return this->isCircle;
 }
 
+void Figure::setIsCube(bool isItCube)
+{
+    this->isCube = isItCube;
+}
+
+bool Figure::getIsCube()
+{
+    return this->isCube;
+}
+
 void Figure::setCenter(Point *newCircleCenter)
 {
     this->centerCircle = newCircleCenter;
@@ -114,6 +124,16 @@ void Figure::setRadius(float newRadius)
 float Figure::getRadius()
 {
     return this->radius;
+}
+
+void Figure::setHeight(float newHeight)
+{
+    this->height = newHeight;
+}
+
+float Figure::getHeight()
+{
+    return this->height;
 }
 
 void Figure::addNewPoint(Point *newPoint)

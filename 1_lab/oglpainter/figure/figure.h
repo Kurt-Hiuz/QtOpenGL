@@ -16,8 +16,8 @@ public:
     Figure(Point *xpos, Point *ypos, Point *zpos, Point *wpos);
     ~Figure();
 
-    void setPaintMode(GLenum newMode);
-    GLenum getPaintMode();
+    void setPaintMode(int newMode);
+    int getPaintMode();
 
     void setBorderWidth(int newBorderWidth);
     int getBorderWidth();
@@ -37,15 +37,17 @@ public:
     void setIsCicle(bool isItCircle);
     bool getIsCircle();
 
+    void setIsCube(bool isItCube);
+    bool getIsCube();
+
     void setCenter(Point *newCircleCenter);
     Point* getCenter();
 
     void setRadius(float newRadius);
     float getRadius();
-    // void paint();
-    // void paint2f();
-    // void paint3f();
-    // void paint4f();
+
+    void setHeight(float newHeight);
+    float getHeight();
 
     QString toDegug();
 
@@ -55,10 +57,12 @@ private:
     QColor *borderColor;
     QColor *backgroundColor;
     int dimensional;
-    GLenum paintMode;
+    int paintMode;
     bool isCircle = false;
+    bool isCube = false;
     Point *centerCircle;
     int radius;
+    float height;
 };
 
 #endif // FIGURE_H
